@@ -1,18 +1,8 @@
-using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjectApp.Data;
 using ServerApp.Services;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-
-using static ServerApp.Controllers.RegController;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -37,17 +27,14 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
     ValidateIssuerSigningKey = true,
 };});
 //сервис jwt токенов
-
 builder.Services.AddTransient<AuthenticationHandler>();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<UsersDataContext>(options => options.UseNpgsql
 (builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.Configure<IdentityOptions>(options => { 
 });
-
 //для работы таймера
 builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
@@ -60,7 +47,6 @@ if (app.Environment.IsDevelopment())
    // app.UseSwagger();
   //  app.UseSwaggerUI();
 }
-
 app.UseRouting(); //Использовать маршурты
 
 Console.WriteLine("Start my Server");
@@ -84,13 +70,6 @@ app.UseStaticFiles(); // Использование статичных файл�
 app.MapControllers();
 //app.MapControllerRoute(name: "default", pattern: "{controller=TestController}/{action=Index}/{id?}");
 app.MapPost("/login", async (User user, AuthenticationHandler authenticationHandler) => await authenticationHandler.AuthenticateAsync(user));
-
-
-// Создать экземпляр класса LoginService и передать ему данные пользователя
-//LoginService loginService = new LoginService();
-//loginService.Login(user);
-
-// Вернуть ответ
 
 app.MapControllerRoute(name: "default", pattern: "{controller=RegController}/{action=Index}/{id?}");
 app.MapControllerRoute(name: "default", pattern: "{controller=ProverkaController}/{action=Index}/{id?}");
